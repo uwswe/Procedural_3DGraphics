@@ -3,7 +3,7 @@
  */
 
 //var treeObjects = [];
-function tree()
+function tree(treePos)
 {
     var manager = new THREE.LoadingManager();
     manager.onProgress = function (item, loaded, total) {
@@ -40,10 +40,11 @@ function tree()
             }
         });
 
-        //object.position.set(vegetationTilePositions[i].x, vegetationTilePositions[i].y, vegetationTilePositions[i].z);
-        object.position.set(0, 0, 0);
+        //object.position.set(vegetationTilePositions[0].x, vegetationTilePositions[0].y, vegetationTilePositions[0].z);
+        object.position.set(treePos.x, .4, treePos.z);
+        console.log("from tree(): " + treePos);
         object.scale.set(.25, .25, .25);
-        treeObjects.push(object);
-        //scene.add(object);
+        //treeObjects.push(object);
+        scene.add(object);
     }, onProgress, onError);
 }

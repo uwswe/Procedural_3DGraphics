@@ -91,7 +91,6 @@
     controls = new THREE.OrbitControls( camera, renderer.domElement);
     //moreControls = new THREE.TrackballControls(camera, renderer.domElement);
 
-
     // LISTENERS
     // when the mouse moves, call the given function
     document.addEventListener( 'mousedown', onMouseDrag, false );
@@ -136,7 +135,7 @@
 
     // SCENE ADDITIONS
 
-    // TODO: CONSOLIDATE SOME OF THESE LOOPS
+    // Adds hexagon tiles in the respective position
     // adds odd-numbered rows
     for(var i = 0; i < 8; i++) {
         // row 1
@@ -158,6 +157,7 @@
         object.position.x = (gridSize / 2) - i * 7;
         object.position.z = gridSize / 2 - 12;
 
+        addPosition(object);
         scene.add(object);
 
         // row 5
@@ -168,6 +168,7 @@
         object.position.x = (gridSize / 2) - i * 7;
         object.position.z = gridSize / 2 - 24;
 
+        addPosition(object);
         scene.add(object);
 
         // row 7
@@ -178,6 +179,7 @@
         object.position.x = (gridSize / 2) - i * 7;
         object.position.z = gridSize / 2 - 36;
 
+        addPosition(object);
         scene.add(object);
 
         // row 9
@@ -188,6 +190,7 @@
         object.position.x = (gridSize / 2) - i * 7;
         object.position.z = gridSize / 2 - 48;
 
+        addPosition(object);
         scene.add(object);
     }
 
@@ -202,6 +205,7 @@
         if( i === 0) {
             object.position.x = gridSize / 2 + 3.5;
             object.position.z = gridSize / 2 - 6;
+            addPosition(object);
             scene.add(object);
             continue;
         }
@@ -209,7 +213,7 @@
         object.position.x = (gridSize / 2) + (3.5 - (i * 7));
         object.position.z = gridSize / 2 - 6;
 
-        //addPosition(object);
+        addPosition(object);
         scene.add(object);
 
         // row 4
@@ -220,6 +224,7 @@
         if( i === 0) {
             object.position.x = gridSize / 2 + 3.5;
             object.position.z = gridSize / 2 - 18;
+            addPosition(object);
             scene.add(object);
             continue;
         }
@@ -228,6 +233,7 @@
         object.position.y = 0;
         object.position.z = gridSize / 2 - 18;
 
+        addPosition(object);
         scene.add(object);
 
         // row6
@@ -238,6 +244,7 @@
         if( i === 0) {
             object.position.x = gridSize / 2 + 3.5;
             object.position.z = gridSize / 2 - 30;
+            addPosition(object);
             scene.add(object);
             continue;
         }
@@ -246,6 +253,7 @@
         object.position.y = 0;
         object.position.z = gridSize / 2 - 30;
 
+        addPosition(object);
         scene.add(object);
 
         // row 8
@@ -256,6 +264,7 @@
         if( i === 0) {
             object.position.x = gridSize / 2 + 3.5;
             object.position.z = gridSize / 2 - 42;
+            addPosition(object);
             scene.add(object);
             continue;
         }
@@ -263,12 +272,11 @@
         object.position.x = (gridSize / 2) + (3.5 - (i * 7));
         object.position.z = gridSize / 2 - 42;
 
+        addPosition(object);
         scene.add(object);
     }
-    
 
-
-    // add the tile positions in their respective array
+    // manages the position of each individual tile
     function addPosition(object) {
         switch(object.material.color.getHexString()) {
             case "a3cbff":
@@ -291,16 +299,15 @@
     }
 
     //Models
-//    var objects = [];
-    //tree();
-    //var mods = new models();
-    tree();
-    var object = treeObjects[0];
-    scene.add(object);
+
+    // adds a tree to every green tile
+    for(var i = 0; i < vegetationTilePositions.length; i++) {
+        tree(vegetationTilePositions[i]);
+    }
 
 
-//    scene.add(object);
-    console.log("treeObjects[0]: " + treeObjects[0]);
+
+
     scene.add(grid);
 
     scene.add( ambientlight );
