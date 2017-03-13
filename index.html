@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>B & A Final Project</title>
+    <style>
+        body {
+            text-align: center;
+        }
+    </style>
+    <script src="three.js-master/build/three.min.js"></script> <!-- Location of the three.js library. -->
+    <!--<script src="three.js-master/build/threeCSG.js"></script>-->
+    <script src="three.js-master/examples/js/controls/TrackballControls.js"></script>
+    <script src="three.js-master/examples/js/loaders/OBJLoader.js"></script>
+
+    <script src="three.js-master/examples/js/controls/OrbitControls.js"></script>
+
+    <!--<script src="three.js-master/examples/js/ImprovedNoise.js"></script>-->
+    <!--<script src="three.js-master/examples/js/Detector.js"></script>-->
+
+</head>
+
+<body>
+<h1>B & A Final Project</h1>
+
+<p>Created using Three.js r84</p>
+<div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
+
+<!--Adding the vertex shader-->
+<script type="x-shader/x-vertex" id="vertexShader">
+    attribute float vertexDisplacement;
+    uniform float delta;
+    varying float vOpacity;
+    varying vec3 vUv;
+
+    void main() {
+    vUv = position;
+    vOpacity = vertexDisplacement;
+
+    vec3 p = position;
+
+    p.z += sin(vertexDisplacement) * 10.0;
+    p.y += cos(vertexDisplacement) * 10.0;
+
+        vec4 modelViewPosition = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * modelViewPosition;
+    }
+</script>
+
+<!--fragment shader-->
+<script type="x-shader/x-fragment" id="fragmentShader">
+    uniform float delta;
+    varying float vOpacity;
+    varying vec3 vUv;
+
+    void main() {
+        float red = 0.3 + cos(vUv.x * delta);
+        float green = 1.0 + sin(delta) * 0.5;
+        float blue = 0.0;
+
+        gl_FragColor = vec4(red, green, blue, 0.2); // color value for each pixel
+    }
+</script>
+
+
+<script>
+
+    var controls;
+    var moreControls;
+    var mouse = { x: 0, y: 0 };
+    var worldWidth = 256, worldDepth = 256, worldHalfWidth = worldWidth / 2, worldHalfDepth = worldDepth / 2;
+
+    // SCENE
+    var scene = new THREE.Scene(); // Create a Three.js scene object.
+    //scene.fog = new THREE.Fog( 0x050505, 1, 4000 );
+
+    // CAMERA
+    var camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 1, 10000); // Define the perspective camera's attributes.
+    camera.position.set(0, 0, 150);
+    //camera.lookAt(scene.position);
+
+    // RENDERER
+    var renderer = window.WebGLRenderingContext ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer(); // Fallback to canvas renderer, if necessary.
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight); // Set the size of the WebGL viewport.
+    renderer.setClearColor( 0xffffff );
+    document.getElementById( 'ThreeJS' );
+    document.body.appendChild( renderer.domElement );
+
+    // CONTROLS
+    controls = new THREE.OrbitControls( camera, renderer.domElement);
+    //moreControls = new THREE.TrackballControls(camera, renderer.domElement);
+
+
+    // LISTENERS
+    // when the mouse moves, call the given function
+    document.addEventListener( 'mousedown', onMouseDrag, false );
+
+    // GEOMETRY SIZES
+
+    // GEOMETRY DEFINITIONS
+    var gridSize = 50;
+    var grid = new THREE.GridHelper(gridSize, gridSize, 0x8B8B8B, 0x8B8B8B);
+    var geometry = new THREE.PlaneBufferGeometry( 50, 50, worldWidth - 1, worldDepth - 1 );
+    var cubeGeometry = new THREE.BoxGeometry(1, 1, 0);
+    var hexGeometry = new THREE.CylinderGeometry(4, 4, 1, 6);
+
+    // MATERIAL DEFINITIONS
+
+    // MESH DEFINITIONS
+
+    // MESH POSITIONS
+
+    //    mesh1.position.set(-35, 50, -25);
+    //    mesh2.position.set(0, 0, 75);
+
+    // LIGHT DEFINITIONS
+    // lights are implemented afterwards because we might want to point a light towards a mesh
+    var ambientlight = new THREE.AmbientLight( 0xfff000, 0.5 );             // soft white light
+    var pointLight = new THREE.PointLight( 0xffffff, 0.65, 1000 );
+    var directionalLight = new THREE.DirectionalLight( 0xffffff, 1, 1000 );
+    //directionalLight.target = mesh;
+    directionalLight.castShadow = true;
+    directionalLight.shadow.camera.zoom = 4;
+
+    // preset colors options for the tile colors
+    // water, sand, buildings, vegetation
+    var tileColors = [0xA3CBFF, 0xF6EDDA, 0xEAEAEA, 0xCBE6A3];
+
+    // arrays to store the positions of each tile
+    var vegetationTilePositions = [];
+    var waterTilePositions = [];
+    var sandTilePositions = [];
+    var buildingsTilePositions = [];
+
+
+    // SCENE ADDITIONS
+
+    // adds row1
+    for(var i = 0; i < 8; i++) {
+        var object = new THREE.Mesh(hexGeometry, new THREE.MeshBasicMaterial({
+            color: tileColors[Math.floor(Math.random() * 4)],
+            opacity: 0.4 }));
+
+        object.position.x = (gridSize / 2) - i * 7;
+        object.position.z = gridSize / 2;
+
+        addPosition(object);
+        scene.add(object);
+    }
+
+    // adds row2
+    for(var i = 0; i < 9; i++) {
+        var object = new THREE.Mesh(hexGeometry, new THREE.MeshBasicMaterial({
+            color: tileColors[Math.floor(Math.random() * 4)],
+            opacity: 0.4 }));
+
+        if( i === 0) {
+            object.position.x = gridSize / 2 + 3.5;
+            object.position.z = gridSize / 2 - 6;
+            scene.add(object);
+            continue;
+        }
+
+        object.position.x = (gridSize / 2) + (3.5 - (i * 7));
+        object.position.z = gridSize / 2 - 6;
+
+        //addPosition(object);
+
+        scene.add(object);
+    }
+
+    // adds row3
+    for(var i = 0; i < 8; i++) {
+        var object = new THREE.Mesh(hexGeometry, new THREE.MeshBasicMaterial({
+            color: tileColors[Math.floor(Math.random() * 4)],
+            opacity: 0.4 }));
+
+        object.position.x = (gridSize / 2) - i * 7;
+        object.position.z = gridSize / 2 - 12;
+
+        scene.add(object);
+    }
+
+    // adds row4
+    for(var i = 0; i < 9; i++) {
+        var object = new THREE.Mesh(hexGeometry, new THREE.MeshBasicMaterial({
+            color: tileColors[Math.floor(Math.random() * 4)],
+            opacity: 0.4 }));
+
+        if( i === 0) {
+            object.position.x = gridSize / 2 + 3.5;
+            object.position.z = gridSize / 2 - 18;
+            scene.add(object);
+            continue;
+        }
+
+        object.position.x = (gridSize / 2) + (3.5 - (i * 7));
+        object.position.y = 0;
+        object.position.z = gridSize / 2 - 18;
+
+        scene.add(object);
+    }
+
+    // adds row5
+    for(var i = 0; i < 8; i++) {
+        var object = new THREE.Mesh(hexGeometry, new THREE.MeshBasicMaterial({
+            color: tileColors[Math.floor(Math.random() * 4)],
+            opacity: 0.4 }));
+
+        object.position.x = (gridSize / 2) - i * 7;
+        object.position.z = gridSize / 2 - 24;
+
+        scene.add(object);
+    }
+
+    // adds row6
+    for(var i = 0; i < 9; i++) {
+        var object = new THREE.Mesh(hexGeometry, new THREE.MeshBasicMaterial({
+            color: tileColors[Math.floor(Math.random() * 4)],
+            opacity: 0.4 }));
+
+        if( i === 0) {
+            object.position.x = gridSize / 2 + 3.5;
+            object.position.z = gridSize / 2 - 30;
+            scene.add(object);
+            continue;
+        }
+
+        object.position.x = (gridSize / 2) + (3.5 - (i * 7));
+        object.position.y = 0;
+        object.position.z = gridSize / 2 - 30;
+
+        scene.add(object);
+    }
+
+    // adds row7
+    for(var i = 0; i < 8; i++) {
+        var object = new THREE.Mesh(hexGeometry, new THREE.MeshBasicMaterial({
+            color: tileColors[Math.floor(Math.random() * 4)],
+            opacity: 0.4 }));
+
+        object.position.x = (gridSize / 2) - i * 7;
+        object.position.z = gridSize / 2 - 36;
+
+        scene.add(object);
+    }
+
+    // adds row8
+    for(var i = 0; i < 9; i++) {
+        var object = new THREE.Mesh(hexGeometry, new THREE.MeshBasicMaterial({
+            color: tileColors[Math.floor(Math.random() * 4)],
+            opacity: 0.4 }));
+
+        if( i === 0) {
+            object.position.x = gridSize / 2 + 3.5;
+            object.position.z = gridSize / 2 - 42;
+            scene.add(object);
+            continue;
+        }
+
+        object.position.x = (gridSize / 2) + (3.5 - (i * 7));
+        object.position.z = gridSize / 2 - 42;
+
+        scene.add(object);
+    }
+
+    // adds row9
+    for(var i = 0; i < 8; i++) {
+        var object = new THREE.Mesh(hexGeometry, new THREE.MeshBasicMaterial({
+            color: tileColors[Math.floor(Math.random() * 4)],
+            opacity: 0.4 }));
+
+        object.position.x = (gridSize / 2) - i * 7;
+        object.position.z = gridSize / 2 - 48;
+
+        scene.add(object);
+    }
+
+    // add the tile positions in their respective array
+    function addPosition(object) {
+        switch(object.material.color.getHexString()) {
+            case "a3cbff":
+                waterTilePositions.push(object.position);
+                //console.log("waterTilePositions[0]: " + waterTilePositions[0].x);
+                break;
+            case "f6edda":
+                sandTilePositions.push(object.position);
+                //console.log("sandTilePositions[0]: " + sandTilePositions[0].x);
+                break;
+            case "eaeaea":
+                buildingsTilePositions.push(object.position);
+                //console.log("buildingsTilePositions[0]: " + buildingsTilePositions[0].x);
+                break;
+            case "cbe6a3":
+                vegetationTilePositions.push(object.position);
+                //console.log("vegetationTilePositions[0]: " + vegetationTilePositions[0].x);
+                break;
+        }
+    }
+
+    //Models
+
+
+    var manager = new THREE.LoadingManager();
+    manager.onProgress = function ( item, loaded, total ) {
+        console.log( item, loaded, total );
+    };
+
+    var texture = new THREE.Texture();
+
+    var onProgress = function ( xhr ) {
+        if ( xhr.lengthComputable ) {
+            var percentComplete = xhr.loaded / xhr.total * 100;
+            console.log( Math.round(percentComplete, 2) + '% downloaded' );
+        }
+    };
+
+    var onError = function ( xhr ) {
+    };
+
+
+    var loader = new THREE.ImageLoader(manager);
+        loader.load('three.js-master/examples/obj/weepingWillow/weeping-willow-t.jpg', function (image) {
+        texture.image = image;
+        texture.needsUpdate = true;
+    });
+
+    // model
+
+    var loader = new THREE.OBJLoader(manager);
+        loader.load('three.js-master/examples/obj/weepingWillow/weepingWillow.obj', function (object) {
+        object.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+                child.material.map = texture;
+            }
+        });
+
+        //object.position.set(vegetationTilePositions[i].x, vegetationTilePositions[i].y, vegetationTilePositions[i].z);
+        object.position.set(0, 0, 0);
+        object.scale.set(.25, .25, .25);
+        scene.add(object);
+    }, onProgress, onError);
+
+    scene.add(grid);
+
+    scene.add( ambientlight );
+    scene.add( pointLight );
+    scene.add( directionalLight );
+
+    // function to respond to mouse events
+    function onMouseDrag( event ) {
+        // prioritizes this event handler over others
+        event.preventDefault();
+
+        // update the mouse variable
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    }
+
+    var delta = 0;
+
+    var render = function () {
+        // OBJECT ROTATION AND POSITION UPDATES
+        delta += 1;
+        //delta += Math.PI / 12;
+
+
+//        if(delta % 100 === 0) {
+//            renderer.setClearColor(Math.random() * 0xffffff);
+//        }
+
+        // UPDATE ORBIT CONTROLS
+        controls.update();
+        //moreControls.update();
+        // BASICS OF THE RENDER FUNCTION
+        renderer.render(scene, camera);
+
+        requestAnimationFrame(render); // Calls render() up to 60 frames/second
+    };
+
+    render(); // Start the rendering of the animation frames.
+</script>
+</body>
+</html>
