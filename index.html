@@ -290,12 +290,13 @@
         if(i % 3 === 0) {
             weepingWillow(vegetationTilePositions[i]);
         }
-
+        if(i % 5 === 0) {
+            farmhouse(sandTilePositions[i]);
+        }
         autumnTree(vegetationTilePositions[i]);
-        farmhouse(sandTilePositions[i]); // includes an unwanted back wall in the obj model
-    }
 
-    //cartoonTrees(vegetationTilePositions[0]);
+    }
+    ghosthouse(sandTilePositions[0]);
 
     scene.add(grid);
 
@@ -313,18 +314,7 @@
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
     }
 
-    var delta = 0;
-
     var render = function () {
-        // OBJECT ROTATION AND POSITION UPDATES
-        delta += 1;
-        //delta += Math.PI / 12;
-
-
-//        if(delta % 100 === 0) {
-//            renderer.setClearColor(Math.random() * 0xffffff);
-//        }
-
         // UPDATE ORBIT CONTROLS
         controls.update();
         //moreControls.update();
