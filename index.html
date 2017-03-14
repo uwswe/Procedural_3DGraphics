@@ -9,12 +9,12 @@
             text-align: center;
         }
     </style>
-    <script src="three.js-master/build/three.min.js"></script> <!-- Location of the three.js library. -->
+    <script src="libraries/three.min.js"></script> <!-- Location of the three.js library. -->
     <!--<script src="three.js-master/build/threeCSG.js"></script>-->
-    <script src="three.js-master/examples/js/controls/TrackballControls.js"></script>
-    <script src="three.js-master/examples/js/loaders/OBJLoader.js"></script>
+    <script src="libraries/TrackballControls.js"></script>
+    <script src="libraries/OBJLoader.js"></script>
 
-    <script src="three.js-master/examples/js/controls/OrbitControls.js"></script>
+    <script src="libraries/OrbitControls.js"></script>
     <script type="text/javascript" src="models.js"></script>
     <!--<script src="three.js-master/examples/js/Detector.js"></script>-->
 
@@ -301,9 +301,9 @@
     //Models
 
     // adds a tree to every green tile
-//    for(var i = 0; i < vegetationTilePositions.length; i++) {
-//        weepingWillow(vegetationTilePositions[i]);
-//    }
+    for(var i = 0; i < vegetationTilePositions.length; i++) {
+        weepingWillow(vegetationTilePositions[i]);
+    }
 
     //oakTree(vegetationTilePositions[0]);      // obj model is too large to include multiple renderings
     //weepingWillow(vegetationTilePositions[1]);
