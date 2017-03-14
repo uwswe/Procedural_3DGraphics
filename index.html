@@ -302,13 +302,16 @@
 
     // adds a tree to every green tile
     for(var i = 0; i < vegetationTilePositions.length; i++) {
-        weepingWillow(vegetationTilePositions[i]);
+        //weepingWillow(vegetationTilePositions[i]);
+        //autumnTree(vegetationTilePositions[i]);
+        scaryTree(vegetationTilePositions[i]);
     }
 
-    //oakTree(vegetationTilePositions[0]);      // obj model is too large to include multiple renderings
+
     //weepingWillow(vegetationTilePositions[1]);
     house(buildingsTilePositions[0]); // includes an unwanted back wall in the obj model
 
+    //rocks(sandTilePositions[0]);
 
     scene.add(grid);
 
