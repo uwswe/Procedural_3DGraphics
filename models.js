@@ -35,12 +35,13 @@ function weepingWillow(treePos) {
         });
 
         object.position.set(treePos.x, .4, treePos.z);
-        object.scale.set(.25, .25, .25);
+        var s = Math.random();
+        object.scale.set(s, s, s);
         scene.add(object);
     }, onProgress, onError);
 }
 
-function autumnTree(treePos) {
+function cartoonTrees(treePos) {
     var manager = new THREE.LoadingManager();
     manager.onProgress = function (item, loaded, total) {
         console.log(item, loaded, total);
@@ -58,28 +59,28 @@ function autumnTree(treePos) {
     var onError = function (xhr) {
     };
 
-    var loader = new THREE.ImageLoader(manager);
-    loader.load('models/vegetation/autumnTree/AL05aut_a.tif', function (image) {
-        texture.image = image;
-        texture.needsUpdate = true;
-    });
+    // var loader = new THREE.ImageLoader(manager);
+    // loader.load('models/vegetation/cartoonTrees/cartoontrees.png', function (image) {
+    //     texture.image = image;
+    //     texture.needsUpdate = true;
+    // });
 
     var loader = new THREE.OBJLoader(manager);
-    loader.load('models/vegetation/autumnTree/AL05m.obj', function (object) {
+    loader.load('models/vegetation/cartoonTrees/low poly tree OBJ.obj', function (object) {
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
                 child.material.map = texture;
             }
         });
 
-        object.position.set(treePos.x, .4, treePos.z);
-        object.scale.set(.05, .05, .05);
-        object.rotation.x -= Math.PI / 2;
+        object.position.set(treePos.x, .9, treePos.z);
+        object.scale.set(.5, .5, .5);
+        //object.rotation.x -= Math.PI / 2;
         scene.add(object);
     }, onProgress, onError);
 }
 
-function scaryTree(treePos) {
+function autumnTree(treePos) {
     var manager = new THREE.LoadingManager();
     manager.onProgress = function (item, loaded, total) {
         console.log(item, loaded, total);
@@ -112,12 +113,13 @@ function scaryTree(treePos) {
         });
 
         object.position.set(treePos.x - 2.5, .4, treePos.z);
-        object.scale.set(.95, .95, .95);
+        var s = Math.random();
+        object.scale.set(s, s, s);
         scene.add(object);
     }, onProgress, onError);
 }
 
-function house(housePos) {
+function farmhouse(housePos) {
     var manager = new THREE.LoadingManager();
     manager.onProgress = function (item, loaded, total) {
         console.log(item, loaded, total);
@@ -136,13 +138,19 @@ function house(housePos) {
     };
 
     var loader = new THREE.ImageLoader(manager);
-    loader.load('models/structures/house/plaster_bare_6035_8712_Small.jpg', function (image) {
+    loader.load('models/structures/house/Farmhouse Texture.jpg', function (image) {
+        texture.image = image;
+        texture.needsUpdate = true;
+    });
+
+    var loader = new THREE.ImageLoader(manager);
+    loader.load('models/structures/house/Farmhouse Texture Bump Map.jpg', function (image) {
         texture.image = image;
         texture.needsUpdate = true;
     });
 
     var loader = new THREE.OBJLoader(manager);
-    loader.load('models/structures/house/house1.obj', function (object) {
+    loader.load('models/structures/house/Farmhouse OBJ.obj', function (object) {
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
                 child.material.map = texture;
@@ -150,7 +158,45 @@ function house(housePos) {
         });
 
         object.position.set(housePos.x, .4, housePos.z);
-        object.scale.set(.5, .5, .5);
+        object.scale.set(.1, .1, .1);
+        scene.add(object);
+    }, onProgress, onError);
+}
+
+function farmhouse2(housePos) {
+    var manager = new THREE.LoadingManager();
+    manager.onProgress = function (item, loaded, total) {
+        console.log(item, loaded, total);
+    };
+
+    var texture = new THREE.Texture();
+
+    var onProgress = function (xhr) {
+        if (xhr.lengthComputable) {
+            var percentComplete = xhr.loaded / xhr.total * 100;
+            console.log(Math.round(percentComplete, 2) + '% downloaded');
+        }
+    };
+
+    var onError = function (xhr) {
+    };
+
+    var loader = new THREE.ImageLoader(manager);
+    loader.load('models/structures/house/Farmhouse Texture.jpg', function (image) {
+        texture.image = image;
+        texture.needsUpdate = true;
+    });
+
+    var loader = new THREE.OBJLoader(manager);
+    loader.load('models/structures/house/Farmhouse OBJ.obj', function (object) {
+        object.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+                child.material.map = texture;
+            }
+        });
+
+        object.position.set(housePos.x, .4, housePos.z);
+        object.scale.set(.1, .1, .1);
         scene.add(object);
     }, onProgress, onError);
 }
